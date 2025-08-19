@@ -104,7 +104,12 @@ export function PersonInputForm({ people, onPeopleChange }: PersonInputFormProps
   return (
     <Card className="shadow-lg animate-fade-in border-none bg-transparent shadow-none">
       <CardHeader>
-        <CardTitle>Group Members</CardTitle>
+        <div className="flex justify-between items-center">
+          <CardTitle>Group Members</CardTitle>
+          <Button onClick={handleShareLink} variant="outline" size="sm">
+            <Link className="mr-2 h-4 w-4" /> Share Link
+          </Button>
+        </div>
         <CardDescription>Add or remove people, and enter their information.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -160,9 +165,6 @@ export function PersonInputForm({ people, onPeopleChange }: PersonInputFormProps
         <div className="flex gap-2">
           <Button onClick={handleAddPerson} variant="outline" className="flex-1">
             <UserPlus className="mr-2 h-4 w-4" /> Add Person
-          </Button>
-          <Button onClick={handleShareLink} variant="outline" className="flex-1">
-             <Link className="mr-2 h-4 w-4" /> Share Link
           </Button>
         </div>
         
