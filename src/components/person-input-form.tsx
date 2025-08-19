@@ -81,36 +81,39 @@ export function PersonInputForm({ people, onPeopleChange }: PersonInputFormProps
       <CardContent className="space-y-6">
         <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
           {people.map((person, index) => (
-            <div key={person.id} className="p-3 bg-card/50 rounded-lg space-y-2 border relative animate-fade-in" style={{animationDelay: `${index * 0.05}s`}}>
-              <div className="grid grid-cols-1 gap-2">
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Name</label>
+            <div key={person.id} className="p-3 bg-card/50 rounded-lg space-y-3 border relative animate-fade-in" style={{animationDelay: `${index * 0.05}s`}}>
+              <div className="grid grid-cols-2 gap-x-2 gap-y-3">
+                <div className="col-span-1">
+                  <label className="text-xs font-medium text-muted-foreground">Name</label>
                   <Input
                     type="text"
                     placeholder="e.g. Jane Doe"
                     value={person.name}
                     onChange={(e) => handleUpdatePerson(person.id, 'name', e.target.value)}
-                    className="w-full"
+                    className="w-full h-8"
                   />
                 </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Date of Birth</label>
+                <div className="col-span-1">
+                  <label className="text-xs font-medium text-muted-foreground">Date of Birth</label>
                   <Input
                     type="text"
                     placeholder="YYYY-MM-DD"
                     value={person.dob}
                     onChange={(e) => handleUpdatePerson(person.id, 'dob', e.target.value)}
-                    className={`w-full ${person.errors?.dob ? 'border-destructive' : ''}`}
+                    className={`w-full h-8 ${person.errors?.dob ? 'border-destructive' : ''}`}
                   />
-                  {person.errors?.dob && <p className="text-xs text-destructive mt-1">{person.errors.dob}</p>}
+                </div>
+                <div className="col-span-2">
+                  {person.errors?.dob && <p className="text-xs text-destructive -mt-2">{person.errors.dob}</p>}
                 </div>
               </div>
+
               <div className="flex flex-wrap items-center gap-2">
                 {person.age !== undefined && (
-                  <p className="text-sm text-primary-foreground/80 font-medium rounded-full bg-primary/20 px-3 py-1">Age: {person.age}</p>
+                  <p className="text-xs text-primary-foreground/80 font-medium rounded-full bg-primary/20 px-2 py-0.5">Age: {person.age}</p>
                 )}
                 {person.generation && (
-                   <p className="text-sm text-primary-foreground/80 font-medium rounded-full bg-primary/20 px-3 py-1">{person.generation.nickname}</p>
+                   <p className="text-xs text-primary-foreground/80 font-medium rounded-full bg-primary/20 px-2 py-0.5">{person.generation.nickname}</p>
                 )}
               </div>
               <Button
