@@ -55,8 +55,14 @@ export default function Home() {
         const bCohort = generationCohorts.find(c => c.nickname === b.generation!.nickname);
         
         if (aCohort && bCohort) {
-          // Sort descending by startYear to show newest generations first
-          return bCohort.startYear - aCohort.startYear;
+          // Primary sort: descending by startYear to show newest generations first
+          const generationSort = bCohort.startYear - aCohort.startYear;
+          if (generationSort !== 0) {
+            return generationSort;
+          }
+
+          // Secondary sort: ascending by age (youngest to oldest)
+          return (a.age ?? 0) - (b.age ?? 0);
         }
         return 0;
       });
