@@ -4,7 +4,6 @@ import { useState, useMemo, useEffect } from "react";
 import type { Person } from "@/lib/types";
 import { PersonInputForm } from "@/components/person-input-form";
 import { AgeDistanceGrid } from "@/components/age-distance-grid";
-import { AffiliationFinder } from "@/components/affiliation-finder";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { calculateAge } from "@/lib/dates";
 import { getGeneration } from "@/lib/generations";
@@ -44,7 +43,6 @@ export default function Home() {
   };
   
   const validPeople = useMemo(() => people.filter(p => p.name && p.age !== undefined), [people]);
-  const validDobs = useMemo(() => validPeople.map(p => p.dob).filter((dob): dob is string => !!dob), [validPeople]);
 
   if (!isClient) {
     return null;
@@ -67,22 +65,6 @@ export default function Home() {
           ) : (
             <div className="flex items-center justify-center h-40 text-center text-muted-foreground">
               <p>Enter at least two people with valid names and dates of birth to see the grid.</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card className="shadow-lg animate-fade-in" style={{animationDelay: '0.2s'}}>
-        <CardHeader>
-          <CardTitle>AI Affiliation Finder</CardTitle>
-          <CardDescription>Discover potential group affiliations based on shared generational experiences.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {validDobs.length > 0 ? (
-            <AffiliationFinder dobs={validDobs} />
-          ) : (
-             <div className="flex items-center justify-center h-24 text-center text-muted-foreground">
-              <p>Enter at least one valid date of birth to use the AI finder.</p>
             </div>
           )}
         </CardContent>
