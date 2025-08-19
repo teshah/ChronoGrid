@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from 'next/navigation';
 import type { Person } from "@/lib/types";
 import { PersonInputForm } from "@/components/person-input-form";
 import { AgeDistanceGrid } from "@/components/age-distance-grid";
@@ -24,15 +25,37 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
-export default function Home() {
+function HomePageContent() {
   const [people, setPeople] = useState<Person[]>([]);
   const [isClient, setIsClient] = useState(false);
   const [groupByGeneration, setGroupByGeneration] = useState(false);
   const [generationSortDirection, setGenerationSortDirection] = useState<'ascending' | 'descending'>('ascending');
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const dataParam = searchParams.get('data');
+      if (dataParam) {
+        try {
+          const decodedData = decodeURIComponent(dataParam);
+          const peopleFromUrl: Person[] = decodedData.split(';').map((line, index) => {
+            const parts = line.split(',');
+            const name = parts[0] ? parts[0].trim() : '';
+            const dob = parts[1] ? parts[1].trim() : '';
+            return { id: Date.now() + index, name, dob };
+          }).filter(p => p.name && p.dob);
+          handlePeopleChange(peopleFromUrl);
+        } catch (error) {
+          console.error("Failed to parse data from URL:", error);
+        }
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const handlePeopleChange = (updatedPeople: Person[]) => {
     const processedPeople = updatedPeople.map((person) => {
@@ -59,7 +82,6 @@ export default function Home() {
         const bCohort = generationCohorts.find(c => c.nickname === b.generation!.nickname);
         
         if (aCohort && bCohort) {
-          // Primary sort: by generation startYear
           const generationSort = generationSortDirection === 'ascending' 
             ? aCohort.startYear - bCohort.startYear 
             : bCohort.startYear - aCohort.startYear;
@@ -67,13 +89,11 @@ export default function Home() {
             return generationSort;
           }
 
-          // Secondary sort: ascending by age (youngest to oldest)
           const ageSort = (a.age ?? 0) - (b.age ?? 0);
           if (ageSort !== 0) {
             return ageSort;
           }
 
-          // Tertiary sort: alphabetically by name
           return a.name.localeCompare(b.name);
         }
         return 0;
@@ -323,5 +343,13 @@ export default function Home() {
             </main>
         </SidebarInset>
     </SidebarProvider>
+  );
+}
+
+export default function Home() {
+  return (
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <HomePageContent />
+    </React.Suspense>
   );
 }
