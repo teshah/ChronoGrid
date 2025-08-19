@@ -316,7 +316,7 @@ function HomePageContent() {
             </SidebarContent>
         </Sidebar>
 
-        <SidebarInset className="bg-background">
+        <SidebarInset className="bg-background" variant="sidebar">
             <header className="flex items-center justify-between p-4 border-b md:hidden sticky top-0 bg-background z-20">
                 <h1 className="text-xl font-bold">ChronoGrid</h1>
                 <Sheet>
