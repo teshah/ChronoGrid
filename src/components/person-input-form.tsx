@@ -35,21 +35,28 @@ export function PersonInputForm({ people, onPeopleChange }: PersonInputFormProps
 
   const processBulkText = () => {
     const lines = bulkText.split('\n').filter(line => line.trim() !== '');
-    if(lines.length === 0) {
-        toast({ title: "Input Error", description: "Bulk input is empty.", variant: "destructive" });
-        return;
+    if (lines.length === 0) {
+      toast({
+        title: 'Input Error',
+        description: 'Bulk input is empty. Please provide each person on a new line in the format: Name, DOB.',
+        variant: 'destructive',
+      });
+      return;
     }
 
     const newPeople: Person[] = lines.map((line, index) => {
-      const parts = line.split(',');
-      const name = parts[0]?.trim() || '';
-      const dob = parts[1]?.trim() || '';
+      const parts = line.split(',').map(part => part.trim());
+      const name = parts[0] || '';
+      const dob = parts[1] || '';
       return { id: Date.now() + index, name, dob };
     });
 
     onPeopleChange(newPeople);
     setBulkText('');
-    toast({ title: "Success", description: `Processed ${newPeople.length} people from bulk input.` });
+    toast({
+      title: 'Success',
+      description: `Processed ${newPeople.length} people from bulk input.`,
+    });
   };
 
   return (
