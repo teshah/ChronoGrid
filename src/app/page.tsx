@@ -6,7 +6,7 @@ import { PersonInputForm } from "@/components/person-input-form";
 import { AgeDistanceGrid } from "@/components/age-distance-grid";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { calculateAge } from "@/lib/dates";
-import { getGeneration, generationCohorts } from "@/lib/generations";
+import { getGeneration, generationCohorts, type Generation } from "@/lib/generations";
 import {
   Sidebar,
   SidebarContent,
@@ -17,11 +17,12 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
+import { Menu, ArrowUpDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 
 export default function Home() {
   const [people, setPeople] = useState<Person[]>([]);
@@ -86,45 +87,94 @@ export default function Home() {
     <PersonInputForm people={people} onPeopleChange={handlePeopleChange} />
   );
 
-  const GenerationData = () => (
-    <Card className="shadow-lg animate-fade-in mt-8">
-      <CardHeader>
-        <CardTitle>Generation Cohorts</CardTitle>
-        <CardDescription>The data used to determine generational labels.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Accordion type="single" collapsible className="w-full">
-          <AccordionItem value="item-1">
-            <AccordionTrigger>View Generation Data</AccordionTrigger>
-            <AccordionContent>
-                <div className="overflow-x-auto rounded-lg border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Generation</TableHead>
-                        <TableHead>Nickname</TableHead>
-                        <TableHead>Birth Year Range</TableHead>
-                        <TableHead>Defining Trait</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {generationCohorts.map((cohort) => (
-                        <TableRow key={cohort.name}>
-                          <TableCell className="font-medium">{cohort.name}</TableCell>
-                          <TableCell>{cohort.nickname}</TableCell>
-                          <TableCell>{cohort.startYear} – {cohort.endYear}</TableCell>
-                          <TableCell className="text-muted-foreground">{cohort.definingTrait}</TableCell>
+  const GenerationData = () => {
+    const [sortConfig, setSortConfig] = useState<{ key: keyof Generation; direction: 'ascending' | 'descending' } | null>({ key: 'startYear', direction: 'descending' });
+
+    const sortedCohorts = useMemo(() => {
+      let sortableItems = [...generationCohorts];
+      if (sortConfig !== null) {
+        sortableItems.sort((a, b) => {
+          const aValue = a[sortConfig.key];
+          const bValue = b[sortConfig.key];
+          if (aValue < bValue) {
+            return sortConfig.direction === 'ascending' ? -1 : 1;
+          }
+          if (aValue > bValue) {
+            return sortConfig.direction === 'ascending' ? 1 : -1;
+          }
+          return 0;
+        });
+      }
+      return sortableItems;
+    }, [sortConfig]);
+
+    const requestSort = (key: keyof Generation) => {
+      let direction: 'ascending' | 'descending' = 'ascending';
+      if (sortConfig && sortConfig.key === key && sortConfig.direction === 'ascending') {
+        direction = 'descending';
+      }
+      setSortConfig({ key, direction });
+    };
+
+    const getSortIndicator = (key: keyof Generation) => {
+      if (!sortConfig || sortConfig.key !== key) {
+        return <ArrowUpDown className="ml-2 h-4 w-4 opacity-0 group-hover:opacity-50" />;
+      }
+      if (sortConfig.direction === 'ascending') {
+        return <ArrowUpDown className="ml-2 h-4 w-4" />;
+      }
+      return <ArrowUpDown className="ml-2 h-4 w-4" />;
+    };
+
+    const SortableHeader = ({ columnKey, children, className }: { columnKey: keyof Generation; children: React.ReactNode; className?: string }) => (
+      <TableHead className={cn("cursor-pointer hover:bg-muted/50 group", className)} onClick={() => requestSort(columnKey)}>
+        <div className="flex items-center">
+          {children}
+          {getSortIndicator(columnKey)}
+        </div>
+      </TableHead>
+    );
+
+    return (
+      <Card className="shadow-lg animate-fade-in mt-8">
+        <CardHeader>
+          <CardTitle>Generation Cohorts</CardTitle>
+          <CardDescription>The data used to determine generational labels.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="item-1">
+              <AccordionTrigger>View Generation Data</AccordionTrigger>
+              <AccordionContent>
+                  <div className="overflow-x-auto rounded-lg border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <SortableHeader columnKey="name">Generation</SortableHeader>
+                          <SortableHeader columnKey="nickname">Nickname</SortableHeader>
+                          <SortableHeader columnKey="startYear">Birth Year Range</SortableHeader>
+                          <SortableHeader columnKey="definingTrait">Defining Trait</SortableHeader>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </CardContent>
-    </Card>
-  );
+                      </TableHeader>
+                      <TableBody>
+                        {sortedCohorts.map((cohort) => (
+                          <TableRow key={cohort.name}>
+                            <TableCell className="font-medium">{cohort.name}</TableCell>
+                            <TableCell>{cohort.nickname}</TableCell>
+                            <TableCell>{cohort.startYear} – {cohort.endYear}</TableCell>
+                            <TableCell className="text-muted-foreground">{cohort.definingTrait}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </CardContent>
+      </Card>
+    );
+  };
 
   const OutputSection = () => (
     <div className="space-y-8">
