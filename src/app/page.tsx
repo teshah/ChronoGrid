@@ -41,7 +41,7 @@ function HomePageContent() {
       const dataParam = searchParams.get('data');
       if (dataParam) {
         try {
-          const decodedData = decodeURIComponent(dataParam);
+          const decodedData = atob(decodeURIComponent(dataParam));
           const peopleFromUrl: Person[] = decodedData.split(';').map((line, index) => {
             const parts = line.split(',');
             const name = parts[0] ? parts[0].trim() : '';
@@ -316,7 +316,7 @@ function HomePageContent() {
             </SidebarContent>
         </Sidebar>
 
-        <SidebarInset className="bg-background" variant="sidebar">
+        <SidebarInset className="bg-background">
             <header className="flex items-center justify-between p-4 border-b md:hidden sticky top-0 bg-background z-20">
                 <h1 className="text-xl font-bold">ChronoGrid</h1>
                 <Sheet>
@@ -353,3 +353,5 @@ export default function Home() {
     </React.Suspense>
   );
 }
+
+    
