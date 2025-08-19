@@ -26,3 +26,17 @@ export function getGeneration(year: number): Generation | null {
   }
   return null;
 }
+
+export type GenerationSource = {
+  sourceType: string;
+  examples: string;
+  role: string;
+};
+
+export const generationSources: GenerationSource[] = [
+    { sourceType: 'Primary Research Center', examples: 'Pew Research Center', role: 'Establishes the standard birth year ranges and definitions based on extensive demographic analysis.' },
+    { sourceType: 'Sociologists & Demographers', examples: 'Strauss & Howe', role: 'Originate generational theories and coin key terms (e.g., "Millennial").' },
+    { sourceType: 'Marketing & Research Firms', examples: 'Nielsen, Gallup', role: 'Study consumer and workplace behavior, shaping the business perception of each cohort.' },
+    { sourceType: 'Media & Authors', examples: 'Douglas Coupland', role: 'Popularize the names, nicknames, and defining cultural traits (e.g., "Generation X").' },
+    { sourceType: 'Government Agencies', examples: 'U.S. Census Bureau', role: 'Provide the raw statistical and demographic data that other researchers use for their analysis.' }
+];

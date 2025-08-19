@@ -6,7 +6,7 @@ import { PersonInputForm } from "@/components/person-input-form";
 import { AgeDistanceGrid } from "@/components/age-distance-grid";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { calculateAge } from "@/lib/dates";
-import { getGeneration, generationCohorts, type Generation } from "@/lib/generations";
+import { getGeneration, generationCohorts, type Generation, generationSources, type GenerationSource } from "@/lib/generations";
 import {
   Sidebar,
   SidebarContent,
@@ -88,49 +88,89 @@ export default function Home() {
   );
 
   const GenerationData = () => {
-    const [sortConfig, setSortConfig] = useState<{ key: keyof Generation; direction: 'ascending' | 'descending' } | null>({ key: 'startYear', direction: 'descending' });
+    const [cohortSortConfig, setCohortSortConfig] = useState<{ key: keyof Generation; direction: 'ascending' | 'descending' } | null>({ key: 'startYear', direction: 'descending' });
+    const [sourceSortConfig, setSourceSortConfig] = useState<{ key: keyof GenerationSource; direction: 'ascending' | 'descending' } | null>({ key: 'sourceType', direction: 'ascending' });
 
     const sortedCohorts = useMemo(() => {
       let sortableItems = [...generationCohorts];
-      if (sortConfig !== null) {
+      if (cohortSortConfig !== null) {
         sortableItems.sort((a, b) => {
-          const aValue = a[sortConfig.key];
-          const bValue = b[sortConfig.key];
+          const aValue = a[cohortSortConfig.key];
+          const bValue = b[cohortSortConfig.key];
           if (aValue < bValue) {
-            return sortConfig.direction === 'ascending' ? -1 : 1;
+            return cohortSortConfig.direction === 'ascending' ? -1 : 1;
           }
           if (aValue > bValue) {
-            return sortConfig.direction === 'ascending' ? 1 : -1;
+            return cohortSortConfig.direction === 'ascending' ? 1 : -1;
           }
           return 0;
         });
       }
       return sortableItems;
-    }, [sortConfig]);
+    }, [cohortSortConfig]);
+    
+    const sortedSources = useMemo(() => {
+      let sortableItems = [...generationSources];
+      if (sourceSortConfig !== null) {
+        sortableItems.sort((a, b) => {
+          const aValue = a[sourceSortConfig.key];
+          const bValue = b[sourceSortConfig.key];
+          if (aValue < bValue) {
+            return sourceSortConfig.direction === 'ascending' ? -1 : 1;
+          }
+          if (aValue > bValue) {
+            return sourceSortConfig.direction === 'ascending' ? 1 : -1;
+          }
+          return 0;
+        });
+      }
+      return sortableItems;
+    }, [sourceSortConfig]);
 
-    const requestSort = (key: keyof Generation) => {
+    const requestCohortSort = (key: keyof Generation) => {
       let direction: 'ascending' | 'descending' = 'ascending';
-      if (sortConfig && sortConfig.key === key && sortConfig.direction === 'ascending') {
+      if (cohortSortConfig && cohortSortConfig.key === key && cohortSortConfig.direction === 'ascending') {
         direction = 'descending';
       }
-      setSortConfig({ key, direction });
+      setCohortSortConfig({ key, direction });
+    };
+    
+    const requestSourceSort = (key: keyof GenerationSource) => {
+      let direction: 'ascending' | 'descending' = 'ascending';
+      if (sourceSortConfig && sourceSortConfig.key === key && sourceSortConfig.direction === 'ascending') {
+        direction = 'descending';
+      }
+      setSourceSortConfig({ key, direction });
     };
 
-    const getSortIndicator = (key: keyof Generation) => {
-      if (!sortConfig || sortConfig.key !== key) {
+    const getCohortSortIndicator = (key: keyof Generation) => {
+      if (!cohortSortConfig || cohortSortConfig.key !== key) {
         return <ArrowUpDown className="ml-2 h-4 w-4 opacity-0 group-hover:opacity-50" />;
-      }
-      if (sortConfig.direction === 'ascending') {
-        return <ArrowUpDown className="ml-2 h-4 w-4" />;
       }
       return <ArrowUpDown className="ml-2 h-4 w-4" />;
     };
 
-    const SortableHeader = ({ columnKey, children, className }: { columnKey: keyof Generation; children: React.ReactNode; className?: string }) => (
-      <TableHead className={cn("cursor-pointer hover:bg-muted/50 group", className)} onClick={() => requestSort(columnKey)}>
+    const getSourceSortIndicator = (key: keyof GenerationSource) => {
+      if (!sourceSortConfig || sourceSortConfig.key !== key) {
+        return <ArrowUpDown className="ml-2 h-4 w-4 opacity-0 group-hover:opacity-50" />;
+      }
+      return <ArrowUpDown className="ml-2 h-4 w-4" />;
+    };
+
+    const SortableCohortHeader = ({ columnKey, children, className }: { columnKey: keyof Generation; children: React.ReactNode; className?: string }) => (
+      <TableHead className={cn("cursor-pointer hover:bg-muted/50 group", className)} onClick={() => requestCohortSort(columnKey)}>
         <div className="flex items-center">
           {children}
-          {getSortIndicator(columnKey)}
+          {getCohortSortIndicator(columnKey)}
+        </div>
+      </TableHead>
+    );
+
+    const SortableSourceHeader = ({ columnKey, children, className }: { columnKey: keyof GenerationSource; children: React.ReactNode; className?: string }) => (
+      <TableHead className={cn("cursor-pointer hover:bg-muted/50 group", className)} onClick={() => requestSourceSort(columnKey)}>
+        <div className="flex items-center">
+          {children}
+          {getSourceSortIndicator(columnKey)}
         </div>
       </TableHead>
     );
@@ -138,22 +178,22 @@ export default function Home() {
     return (
       <Card className="shadow-lg animate-fade-in mt-8">
         <CardHeader>
-          <CardTitle>Generation Cohorts</CardTitle>
-          <CardDescription>The data used to determine generational labels.</CardDescription>
+          <CardTitle>Generation Data</CardTitle>
+          <CardDescription>The data used to determine generational labels and their sources.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Accordion type="single" collapsible className="w-full">
+          <Accordion type="single" collapsible className="w-full" defaultValue='item-1'>
             <AccordionItem value="item-1">
-              <AccordionTrigger>View Generation Data</AccordionTrigger>
+              <AccordionTrigger>View Generation Cohorts</AccordionTrigger>
               <AccordionContent>
                   <div className="overflow-x-auto rounded-lg border">
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <SortableHeader columnKey="name">Generation</SortableHeader>
-                          <SortableHeader columnKey="nickname">Nickname</SortableHeader>
-                          <SortableHeader columnKey="startYear">Birth Year Range</SortableHeader>
-                          <SortableHeader columnKey="definingTrait">Defining Trait</SortableHeader>
+                          <SortableCohortHeader columnKey="name">Generation</SortableCohortHeader>
+                          <SortableCohortHeader columnKey="nickname">Nickname</SortableCohortHeader>
+                          <SortableCohortHeader columnKey="startYear">Birth Year Range</SortableCohortHeader>
+                          <SortableCohortHeader columnKey="definingTrait">Defining Trait</SortableCohortHeader>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -163,6 +203,31 @@ export default function Home() {
                             <TableCell>{cohort.nickname}</TableCell>
                             <TableCell>{cohort.startYear} – {cohort.endYear}</TableCell>
                             <TableCell className="text-muted-foreground">{cohort.definingTrait}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-2">
+              <AccordionTrigger>View Data Sources</AccordionTrigger>
+              <AccordionContent>
+                  <div className="overflow-x-auto rounded-lg border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <SortableSourceHeader columnKey="sourceType">Source Type</SortableSourceHeader>
+                          <SortableSourceHeader columnKey="examples">Specific Example(s)</SortableSourceHeader>
+                          <SortableSourceHeader columnKey="role">Role in Defining Generations</SortableSourceHeader>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {sortedSources.map((source) => (
+                          <TableRow key={source.sourceType}>
+                            <TableCell className="font-medium">{source.sourceType}</TableCell>
+                            <TableCell>{source.examples}</TableCell>
+                            <TableCell className="text-muted-foreground">{source.role}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
