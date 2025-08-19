@@ -8,22 +8,17 @@ import { AgeDistanceGrid } from "@/components/age-distance-grid";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { calculateAge } from "@/lib/dates";
 import { getGeneration, generationCohorts, type Generation, generationSources, type GenerationSource } from "@/lib/generations";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, ArrowUpDown } from "lucide-react";
+import { Menu, ArrowUpDown, Users, Info, Settings, User } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
 
 function HomePageContent() {
   const [people, setPeople] = useState<Person[]>([]);
@@ -52,6 +47,16 @@ function HomePageContent() {
         } catch (error) {
           console.error("Failed to parse data from URL:", error);
         }
+      } else {
+        // Load default data if no URL param
+        const defaultData = [
+          { id: 1, name: 'Olivia Chen', dob: '1985-03-12' },
+          { id: 2, name: 'Benjamin Carter', dob: '1992-07-24' },
+          { id: 3, name: 'Sophia Rodriguez', dob: '1978-11-02' },
+          { id: 4, name: 'William Kim', dob: '2001-01-15' },
+          { id: 5, name: 'Ava Williams', dob: '1998-09-30' },
+        ];
+        handlePeopleChange(defaultData);
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -109,10 +114,6 @@ function HomePageContent() {
   if (!isClient) {
     return null;
   }
-
-  const InputSection = () => (
-    <PersonInputForm people={people} onPeopleChange={handlePeopleChange} />
-  );
 
   const GenerationData = () => {
     const [cohortSortConfig, setCohortSortConfig] = useState<{ key: keyof Generation; direction: 'ascending' | 'descending' } | null>({ key: 'startYear', direction: 'descending' });
@@ -268,80 +269,89 @@ function HomePageContent() {
     );
   };
 
-  const OutputSection = () => (
-    <div className="space-y-8">
-      <Card className="shadow-lg animate-fade-in">
-        <CardHeader>
-          <div className="flex justify-between items-start">
-            <div>
-              <CardTitle>Age Distance Grid</CardTitle>
-              <CardDescription>Visualizing the age differences in years between group members.</CardDescription>
-            </div>
-            <div className="flex items-center space-x-2 pt-1">
-              <Checkbox id="group-by-generation" checked={groupByGeneration} onCheckedChange={(checked) => setGroupByGeneration(!!checked)} />
-              <Label htmlFor="group-by-generation" className="cursor-pointer">Group by Generation</Label>
-              <Button variant="ghost" size="icon" onClick={toggleGenerationSortDirection} className={`h-6 w-6 ${!groupByGeneration ? 'hidden' : ''}`}>
-                  <ArrowUpDown className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {validPeople.length >= 2 ? (
-            <AgeDistanceGrid people={validPeople} />
-          ) : (
-            <div className="flex items-center justify-center h-40 text-center text-muted-foreground">
-              <p>Enter at least two people with valid names and dates of birth to see the grid.</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-      <GenerationData />
-    </div>
+  const TopBar = () => (
+    <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-card px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+      <SidebarTrigger className="sm:hidden" />
+      <h1 className="text-xl font-semibold">Age Distance Grid</h1>
+      <div className="relative ml-auto flex-1 md:grow-0">
+        <Input
+            type="search"
+            placeholder="Search..."
+            className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
+        />
+      </div>
+      <Avatar>
+          <AvatarImage src="https://placehold.co/100x100.png" alt="@shadcn" data-ai-hint="person face"/>
+          <AvatarFallback>CN</AvatarFallback>
+      </Avatar>
+    </header>
   );
 
   return (
     <SidebarProvider>
-        <Sidebar collapsible="icon">
-            <SidebarHeader>
-                <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-bold text-sidebar-foreground">ChronoGrid</h2>
-                    <SidebarTrigger />
-                </div>
-            </SidebarHeader>
-            <SidebarContent>
-                <div className="p-2">
-                    <InputSection />
-                </div>
-            </SidebarContent>
+      <div className="flex min-h-screen w-full flex-col">
+        <Sidebar collapsible="icon" className="hidden sm:flex">
+          <SidebarContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton href="#" isActive={true} tooltip="Groups">
+                  <Users />
+                  <span>Groups</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton href="#" tooltip="About">
+                  <Info />
+                  <span>About</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton href="#" tooltip="Settings">
+                  <Settings />
+                  <span>Settings</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarContent>
         </Sidebar>
-
-        <SidebarInset className="bg-background">
-            <header className="flex items-center justify-between p-4 border-b md:hidden sticky top-0 bg-background z-20">
-                <h1 className="text-xl font-bold">ChronoGrid</h1>
-                <Sheet>
-                    <SheetTrigger asChild>
-                        <Button variant="outline" size="icon">
-                            <Menu />
+        <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+          <TopBar />
+          <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
+            <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
+                <Card className="shadow-lg animate-fade-in">
+                  <CardHeader>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <CardTitle>Age Distance Grid</CardTitle>
+                        <CardDescription>Visualizing the age differences in years between group members.</CardDescription>
+                      </div>
+                      <div className="flex items-center space-x-2 pt-1">
+                        <Checkbox id="group-by-generation" checked={groupByGeneration} onCheckedChange={(checked) => setGroupByGeneration(!!checked)} />
+                        <Label htmlFor="group-by-generation" className="cursor-pointer">Group by Generation</Label>
+                        <Button variant="ghost" size="icon" onClick={toggleGenerationSortDirection} className={`h-6 w-6 ${!groupByGeneration ? 'hidden' : ''}`}>
+                            <ArrowUpDown className="h-4 w-4" />
                         </Button>
-                    </SheetTrigger>
-                    <SheetContent side="left">
-                        <SheetHeader>
-                            <SheetTitle>Input</SheetTitle>
-                        </SheetHeader>
-                        <div className="py-4">
-                           <InputSection />
-                        </div>
-                    </SheetContent>
-                </Sheet>
-            </header>
-            <main className="p-4 md:p-8">
-                <OutputSection />
-                <footer className="text-center mt-12 text-muted-foreground text-sm">
-                    <p>ChronoGrid &copy; {new Date().getFullYear()}</p>
-                </footer>
-            </main>
-        </SidebarInset>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    {validPeople.length >= 2 ? (
+                      <AgeDistanceGrid people={validPeople} />
+                    ) : (
+                      <div className="flex items-center justify-center h-40 text-center text-muted-foreground">
+                        <p>Enter at least two people with valid names and dates of birth to see the grid.</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+                <GenerationData />
+            </div>
+            <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-1">
+              <PersonInputForm people={people} onPeopleChange={handlePeopleChange} />
+            </div>
+          </main>
+        </div>
+      </div>
     </SidebarProvider>
   );
 }
@@ -353,5 +363,3 @@ export default function Home() {
     </React.Suspense>
   );
 }
-
-    
