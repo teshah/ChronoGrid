@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
@@ -132,8 +133,9 @@ function HomePageContent() {
           }
         }
         
-        // If generations are the same, the list is already sorted by age then name
-        return 0;
+        const ageDiff = (a.age ?? 0) - (b.age ?? 0);
+        if (ageDiff !== 0) return ageDiff;
+        return a.name.localeCompare(b.name);
       });
     }
 
@@ -332,7 +334,7 @@ function HomePageContent() {
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <div>
-                        <CardTitle>Age Distance Grid</CardTitle>
+                        <CardTitle>Age Distance</CardTitle>
                         <CardDescription>Visualizing the age differences in years between group members.</CardDescription>
                       </div>
                       <div className="flex items-center space-x-2 pt-1">
@@ -374,3 +376,5 @@ export default function Home() {
     </React.Suspense>
   );
 }
+
+    
