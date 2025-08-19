@@ -62,7 +62,13 @@ export default function Home() {
           }
 
           // Secondary sort: ascending by age (youngest to oldest)
-          return (a.age ?? 0) - (b.age ?? 0);
+          const ageSort = (a.age ?? 0) - (b.age ?? 0);
+          if (ageSort !== 0) {
+            return ageSort;
+          }
+
+          // Tertiary sort: alphabetically by name
+          return a.name.localeCompare(b.name);
         }
         return 0;
       });
