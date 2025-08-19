@@ -8,9 +8,8 @@ import { AgeDistanceGrid } from "@/components/age-distance-grid";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { calculateAge } from "@/lib/dates";
 import { getGeneration, generationCohorts, type Generation, generationSources, type GenerationSource } from "@/lib/generations";
-import { Sidebar, SidebarContent, SidebarMenuItem, SidebarMenuButton, SidebarProvider, SidebarMenu } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { Menu, ArrowUpDown, Users, Info, Settings, Bot, Link } from "lucide-react";
+import { ArrowUpDown, Users, Info, Bot, Link } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -320,27 +319,8 @@ function HomePageContent() {
   );
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full flex-col bg-muted/40">
-        <Sidebar collapsible="icon" className="hidden sm:flex" onMouseDown={(e) => e.preventDefault()}>
-          <SidebarContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton href="#" isActive={true} tooltip="Groups">
-                  <Users />
-                  <span>Groups</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton href="#" tooltip="About">
-                  <Info />
-                  <span>About</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarContent>
-        </Sidebar>
-        <div className="flex flex-col sm:ml-14">
+    <div className="flex min-h-screen w-full flex-col bg-muted/40">
+        <div className="flex flex-col">
           <TopBar />
           <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
             <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
@@ -374,16 +354,12 @@ function HomePageContent() {
             </div>
             <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-1">
               <div className="w-full">
-                <Button onClick={handleShareLink} variant="outline" className="w-full mb-4">
-                  <Link className="mr-2 h-4 w-4" /> Share Link
-                </Button>
                 <PersonInputForm people={people} onPeopleChange={handlePeopleChange} />
               </div>
             </div>
           </main>
         </div>
       </div>
-    </SidebarProvider>
   );
 }
 

@@ -98,13 +98,17 @@ export function PersonInputForm({ people, onPeopleChange }: PersonInputFormProps
   return (
     <Card className="shadow-lg animate-fade-in">
       <CardHeader>
-        <CardTitle>Group Members</CardTitle>
-        <CardDescription>Add or update member information.</CardDescription>
+        <div className="flex justify-between items-center">
+            <div className="space-y-1.5">
+                <CardTitle>Group Members</CardTitle>
+                <CardDescription>Add or update member information.</CardDescription>
+            </div>
+            <Button onClick={handleShareLink} variant="outline" size="sm">
+                <Link className="mr-2 h-4 w-4" /> Share Link
+            </Button>
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        <Button onClick={handleShareLink} variant="outline" className="w-full">
-          <Link className="mr-2 h-4 w-4" /> Share Link
-        </Button>
         <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
           {people.map((person, index) => (
             <div key={person.id} className="p-2 bg-card/50 rounded-lg border relative animate-fade-in" style={{animationDelay: `${index * 0.05}s`}}>
