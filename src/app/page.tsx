@@ -108,8 +108,16 @@ function HomePageContent() {
   
   const validPeople = useMemo(() => {
     const filtered = people.filter(p => p.name && p.age !== undefined);
+    
+    // Default sort: age ascending, then name ascending
+    const sortedPeople = [...filtered].sort((a, b) => {
+      const ageDiff = (a.age ?? 0) - (b.age ?? 0);
+      if (ageDiff !== 0) return ageDiff;
+      return a.name.localeCompare(b.name);
+    });
+
     if (groupByGeneration) {
-      return [...filtered].sort((a, b) => {
+      return [...sortedPeople].sort((a, b) => {
         if (!a.generation || !b.generation) return 0;
 
         const aCohort = generationCohorts.find(c => c.nickname === a.generation!.nickname);
@@ -122,18 +130,14 @@ function HomePageContent() {
           if (generationSort !== 0) {
             return generationSort;
           }
-
-          const ageSort = (a.age ?? 0) - (b.age ?? 0);
-          if (ageSort !== 0) {
-            return ageSort;
-          }
-
-          return a.name.localeCompare(b.name);
         }
+        
+        // If generations are the same, the list is already sorted by age then name
         return 0;
       });
     }
-    return filtered;
+
+    return sortedPeople;
   }, [people, groupByGeneration, generationSortDirection]);
   
   const toggleGenerationSortDirection = () => {
