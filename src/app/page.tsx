@@ -20,6 +20,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Menu } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export default function Home() {
   const [people, setPeople] = useState<Person[]>([]);
@@ -84,6 +86,46 @@ export default function Home() {
     <PersonInputForm people={people} onPeopleChange={handlePeopleChange} />
   );
 
+  const GenerationData = () => (
+    <Card className="shadow-lg animate-fade-in mt-8">
+      <CardHeader>
+        <CardTitle>Generation Cohorts</CardTitle>
+        <CardDescription>The data used to determine generational labels.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="item-1">
+            <AccordionTrigger>View Generation Data</AccordionTrigger>
+            <AccordionContent>
+                <div className="overflow-x-auto rounded-lg border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Generation</TableHead>
+                        <TableHead>Nickname</TableHead>
+                        <TableHead>Birth Year Range</TableHead>
+                        <TableHead>Defining Trait</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {generationCohorts.map((cohort) => (
+                        <TableRow key={cohort.name}>
+                          <TableCell className="font-medium">{cohort.name}</TableCell>
+                          <TableCell>{cohort.nickname}</TableCell>
+                          <TableCell>{cohort.startYear} – {cohort.endYear}</TableCell>
+                          <TableCell className="text-muted-foreground">{cohort.definingTrait}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </CardContent>
+    </Card>
+  );
+
   const OutputSection = () => (
     <div className="space-y-8">
       <Card className="shadow-lg animate-fade-in">
@@ -109,6 +151,7 @@ export default function Home() {
           )}
         </CardContent>
       </Card>
+      <GenerationData />
     </div>
   );
 

@@ -10,14 +10,13 @@ interface AgeDistanceGridProps {
 export function AgeDistanceGrid({ people }: AgeDistanceGridProps) {
 
   const getDisplayName = (person: Person) => {
-    const generationPart = person.generation ? `${person.generation.nickname}` : '';
-    const agePart = person.age !== undefined ? `(${person.age})` : '';
     return (
       <div className="flex flex-col items-start">
         <span className="font-bold text-base">{person.name}</span>
-        <span className="text-xs text-muted-foreground whitespace-nowrap">
-          {generationPart} {agePart}
-        </span>
+        <div className="text-xs text-muted-foreground whitespace-nowrap">
+          {person.generation && <div>{person.generation.nickname}</div>}
+          {person.age !== undefined && <div>Age: {person.age}</div>}
+        </div>
       </div>
     )
   }
