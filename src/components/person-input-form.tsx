@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Trash2, UserPlus, Info } from 'lucide-react';
+import { Trash2, UserPlus, Info, Link } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from './ui/checkbox';
@@ -72,6 +72,35 @@ export function PersonInputForm({ people, onPeopleChange }: PersonInputFormProps
     });
   };
 
+  const handleShareLink = () => {
+    const validPeople = people.filter(p => p.name && p.dob);
+    if (validPeople.length === 0) {
+      toast({
+        title: 'No Data to Share',
+        description: 'Please add at least one person with a name and date of birth.',
+        variant: 'destructive'
+      });
+      return;
+    }
+    const dataString = validPeople.map(p => `${p.name},${p.dob}`).join(';');
+    const encodedData = btoa(dataString);
+    const url = `${window.location.origin}/?data=${encodeURIComponent(encodedData)}`;
+    
+    navigator.clipboard.writeText(url).then(() => {
+      toast({
+        title: 'Link Copied!',
+        description: 'A shareable link has been copied to your clipboard.',
+      });
+    }, (err) => {
+      console.error('Could not copy text: ', err);
+      toast({
+        title: 'Error',
+        description: 'Could not copy the link to your clipboard.',
+        variant: 'destructive'
+      });
+    });
+  };
+
   return (
     <Card className="shadow-lg animate-fade-in border-none bg-transparent shadow-none">
       <CardHeader>
@@ -128,9 +157,14 @@ export function PersonInputForm({ people, onPeopleChange }: PersonInputFormProps
           ))}
         </div>
 
-        <Button onClick={handleAddPerson} variant="outline" className="w-full">
-          <UserPlus className="mr-2 h-4 w-4" /> Add Person
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={handleAddPerson} variant="outline" className="flex-1">
+            <UserPlus className="mr-2 h-4 w-4" /> Add Person
+          </Button>
+          <Button onClick={handleShareLink} variant="outline" className="flex-1">
+             <Link className="mr-2 h-4 w-4" /> Share Link
+          </Button>
+        </div>
         
         <div>
           <label className="text-sm font-medium text-muted-foreground flex items-center">
