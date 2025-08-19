@@ -9,7 +9,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Trash2, UserPlus, Info } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
-import { calculateAge } from '@/lib/dates';
 
 interface PersonInputFormProps {
   people: Person[];
@@ -60,7 +59,7 @@ export function PersonInputForm({ people, onPeopleChange }: PersonInputFormProps
   };
 
   return (
-    <Card className="shadow-lg animate-fade-in">
+    <Card className="shadow-lg animate-fade-in border-none bg-transparent shadow-none">
       <CardHeader>
         <CardTitle>Group Members</CardTitle>
         <CardDescription>Add or remove people, and enter their information.</CardDescription>
@@ -69,7 +68,7 @@ export function PersonInputForm({ people, onPeopleChange }: PersonInputFormProps
         <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
           {people.map((person, index) => (
             <div key={person.id} className="p-3 bg-card/50 rounded-lg space-y-2 border relative animate-fade-in" style={{animationDelay: `${index * 0.05}s`}}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 gap-2">
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Name</label>
                   <Input
