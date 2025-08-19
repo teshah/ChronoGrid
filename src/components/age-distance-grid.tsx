@@ -24,7 +24,7 @@ export function AgeDistanceGrid({ people }: AgeDistanceGridProps) {
         </TableHeader>
         <TableBody>
           {people.map((rowPerson, rowIndex) => (
-            <TableRow key={rowPerson.id} className="animate-fade-in" style={{animationDelay: `${rowIndex * 0.1}s`}}>
+            <TableRow key={rowPerson.id} className="animate-fade-in" style={{animationDelay: `${(rowIndex + 1) * 0.1}s`}}>
               <TableHead className="sticky left-0 bg-card z-10 font-bold p-2 whitespace-nowrap">
                 {rowPerson.name} ({rowPerson.age})
               </TableHead>
@@ -33,7 +33,7 @@ export function AgeDistanceGrid({ people }: AgeDistanceGridProps) {
                   {rowPerson.id === colPerson.id ? (
                     <span className="text-muted-foreground">—</span>
                   ) : (
-                    <span className="font-mono text-lg font-semibold text-primary-foreground/80">
+                    <span className="font-mono text-lg font-semibold text-foreground/80">
                       {Math.abs((rowPerson.age || 0) - (colPerson.age || 0))}
                     </span>
                   )}
