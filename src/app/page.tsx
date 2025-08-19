@@ -8,7 +8,7 @@ import { AgeDistanceGrid } from "@/components/age-distance-grid";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { calculateAge } from "@/lib/dates";
 import { getGeneration, generationCohorts, type Generation, generationSources, type GenerationSource } from "@/lib/generations";
-import { Sidebar, SidebarContent, SidebarMenuItem, SidebarMenuButton, SidebarProvider } from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarMenuItem, SidebarMenuButton, SidebarProvider, SidebarMenu } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Menu, ArrowUpDown, Users, Info, Settings, Bot, Link } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
