@@ -9,6 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Trash2, UserPlus, Info } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
+import { Checkbox } from './ui/checkbox';
+import { Label } from './ui/label';
 
 interface PersonInputFormProps {
   people: Person[];
@@ -24,6 +26,7 @@ Ava Williams, 1998-09-30`;
 export function PersonInputForm({ people, onPeopleChange }: PersonInputFormProps) {
   const { toast } = useToast();
   const [bulkText, setBulkText] = useState(initialBulkText);
+  const [append, setAppend] = useState(false);
 
   const handleUpdatePerson = (id: number, field: 'name' | 'dob', value: string) => {
     const newPeople = people.map((person) => (person.id === id ? { ...person, [field]: value } : person));
@@ -56,7 +59,12 @@ export function PersonInputForm({ people, onPeopleChange }: PersonInputFormProps
       return { id: Date.now() + index, name, dob };
     });
 
-    onPeopleChange(newPeople);
+    if (append) {
+      onPeopleChange([...people, ...newPeople]);
+    } else {
+      onPeopleChange(newPeople);
+    }
+    
     setBulkText('');
     toast({
       title: 'Success',
@@ -137,6 +145,12 @@ export function PersonInputForm({ people, onPeopleChange }: PersonInputFormProps
             className="mt-1"
             rows={6}
           />
+          <div className="flex items-center space-x-2 mt-2">
+            <Checkbox id="append-checkbox" checked={append} onCheckedChange={(checked) => setAppend(!!checked)} />
+            <Label htmlFor="append-checkbox" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              Append to current list
+            </Label>
+          </div>
           <Button onClick={processBulkText} className="w-full mt-2">Process Bulk Input</Button>
         </div>
       </CardContent>
