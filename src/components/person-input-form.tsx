@@ -102,92 +102,93 @@ export function PersonInputForm({ people, onPeopleChange }: PersonInputFormProps
   };
 
   return (
-    <Card className="shadow-lg animate-fade-in border-none bg-transparent shadow-none">
-      <CardHeader>
-        <div className="flex justify-between items-center">
-          <CardTitle>Group Members</CardTitle>
-          <Button onClick={handleShareLink} variant="outline" size="sm">
-            <Link className="mr-2 h-4 w-4" /> Share Link
-          </Button>
-        </div>
-        <CardDescription>Add or remove people, and enter their information.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
-          {people.map((person, index) => (
-            <div key={person.id} className="p-2 bg-card/50 rounded-lg border relative animate-fade-in" style={{animationDelay: `${index * 0.05}s`}}>
-              <div className="flex items-center gap-2">
-                <div className="flex-1">
-                  <Input
-                    type="text"
-                    placeholder="Name"
-                    value={person.name}
-                    onChange={(e) => handleUpdatePerson(person.id, 'name', e.target.value)}
-                    className="w-full h-8 text-sm"
-                  />
-                </div>
-                <div className="flex-1">
-                  <Input
-                    type="text"
-                    placeholder="YYYY-MM-DD"
-                    value={person.dob}
-                    onChange={(e) => handleUpdatePerson(person.id, 'dob', e.target.value)}
-                    className={`w-full h-8 text-sm ${person.errors?.dob ? 'border-destructive' : ''}`}
-                  />
-                </div>
-                 {person.age !== undefined && (
-                  <p className="text-xs text-muted-foreground font-medium">Age: {person.age}</p>
-                )}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                  onClick={() => handleRemovePerson(person.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-              {person.errors?.dob && <p className="text-xs text-destructive mt-1 pl-1">{person.errors.dob}</p>}
-            </div>
-          ))}
-        </div>
+    <div className="space-y-4">
+      <Button onClick={handleShareLink} variant="outline" className="w-full">
+        <Link className="mr-2 h-4 w-4" /> Share Link
+      </Button>
 
-        <div className="flex gap-2">
-          <Button onClick={handleAddPerson} variant="outline" className="flex-1">
-            <UserPlus className="mr-2 h-4 w-4" /> Add Person
-          </Button>
-        </div>
-        
-        <div>
-          <label className="text-sm font-medium text-muted-foreground flex items-center">
-            Bulk Input
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Info className="h-4 w-4 ml-2 cursor-pointer" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Enter one person per line, e.g.,<br/>John Doe, 1990-05-15</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </label>
-          <Textarea
-            placeholder="Name, YYYY-MM-DD\nName, MM/DD/YYYY..."
-            value={bulkText}
-            onChange={(e) => setBulkText(e.target.value)}
-            className="mt-1"
-            rows={6}
-          />
-          <div className="flex items-center space-x-2 mt-2">
-            <Checkbox id="append-checkbox" checked={append} onCheckedChange={(checked) => setAppend(!!checked)} />
-            <Label htmlFor="append-checkbox" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-              Append to current list
-            </Label>
+      <Card className="shadow-lg animate-fade-in border-none bg-transparent shadow-none">
+        <CardHeader className="p-0 mb-4">
+          <CardTitle>Group Members</CardTitle>
+          <CardDescription>Add or remove people, and enter their information.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6 p-0">
+          <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
+            {people.map((person, index) => (
+              <div key={person.id} className="p-2 bg-card/50 rounded-lg border relative animate-fade-in" style={{animationDelay: `${index * 0.05}s`}}>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1">
+                    <Input
+                      type="text"
+                      placeholder="Name"
+                      value={person.name}
+                      onChange={(e) => handleUpdatePerson(person.id, 'name', e.target.value)}
+                      className="w-full h-8 text-sm"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <Input
+                      type="text"
+                      placeholder="YYYY-MM-DD"
+                      value={person.dob}
+                      onChange={(e) => handleUpdatePerson(person.id, 'dob', e.target.value)}
+                      className={`w-full h-8 text-sm ${person.errors?.dob ? 'border-destructive' : ''}`}
+                    />
+                  </div>
+                  {person.age !== undefined && (
+                    <p className="text-xs text-muted-foreground font-medium">Age: {person.age}</p>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                    onClick={() => handleRemovePerson(person.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                {person.errors?.dob && <p className="text-xs text-destructive mt-1 pl-1">{person.errors.dob}</p>}
+              </div>
+            ))}
           </div>
-          <Button onClick={processBulkText} className="w-full mt-2">Process Bulk Input</Button>
-        </div>
-      </CardContent>
-    </Card>
+
+          <div className="flex gap-2">
+            <Button onClick={handleAddPerson} variant="outline" className="flex-1">
+              <UserPlus className="mr-2 h-4 w-4" /> Add Person
+            </Button>
+          </div>
+          
+          <div>
+            <label className="text-sm font-medium text-muted-foreground flex items-center">
+              Bulk Input
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-4 w-4 ml-2 cursor-pointer" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Enter one person per line, e.g.,<br/>John Doe, 1990-05-15</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </label>
+            <Textarea
+              placeholder="Name, YYYY-MM-DD\nName, MM/DD/YYYY..."
+              value={bulkText}
+              onChange={(e) => setBulkText(e.target.value)}
+              className="mt-1"
+              rows={6}
+            />
+            <div className="flex items-center space-x-2 mt-2">
+              <Checkbox id="append-checkbox" checked={append} onCheckedChange={(checked) => setAppend(!!checked)} />
+              <Label htmlFor="append-checkbox" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Append to current list
+              </Label>
+            </div>
+            <Button onClick={processBulkText} className="w-full mt-2">Process Bulk Input</Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
