@@ -8,10 +8,9 @@ import { AgeDistanceGrid } from "@/components/age-distance-grid";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { calculateAge } from "@/lib/dates";
 import { getGeneration, generationCohorts, type Generation, generationSources, type GenerationSource } from "@/lib/generations";
-import { Sidebar, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarMenuItem, SidebarMenuButton, SidebarProvider } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, ArrowUpDown, Users, Info, Settings, User } from "lucide-react";
+import { Menu, ArrowUpDown, Users, Info, Settings, Bot, Link } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -19,8 +18,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 
 function HomePageContent() {
+  const { toast } = useToast();
   const [people, setPeople] = useState<Person[]>([]);
   const [isClient, setIsClient] = useState(false);
   const [groupByGeneration, setGroupByGeneration] = useState(false);
@@ -61,6 +62,35 @@ function HomePageContent() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
+
+  const handleShareLink = () => {
+    const validPeople = people.filter(p => p.name && p.dob);
+    if (validPeople.length === 0) {
+      toast({
+        title: 'No Data to Share',
+        description: 'Please add at least one person with a name and date of birth.',
+        variant: 'destructive'
+      });
+      return;
+    }
+    const dataString = validPeople.map(p => `${p.name},${p.dob}`).join(';');
+    const encodedData = btoa(dataString);
+    const url = `${window.location.origin}/?data=${encodeURIComponent(encodedData)}`;
+    
+    navigator.clipboard.writeText(url).then(() => {
+      toast({
+        title: 'Link Copied!',
+        description: 'A shareable link has been copied to your clipboard.',
+      });
+    }, (err) => {
+      console.error('Could not copy text: ', err);
+      toast({
+        title: 'Error',
+        description: 'Could not copy the link to your clipboard.',
+        variant: 'destructive'
+      });
+    });
+  };
 
   const handlePeopleChange = (updatedPeople: Person[]) => {
     const processedPeople = updatedPeople.map((person) => {
@@ -218,8 +248,8 @@ function HomePageContent() {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <SortableCohortHeader columnKey="name">Generation</SortableCohortHeader>
                           <SortableCohortHeader columnKey="nickname">Nickname</SortableCohortHeader>
+                          <SortableCohortHeader columnKey="name">Formal Name</SortableCohortHeader>
                           <SortableCohortHeader columnKey="startYear">Birth Year Range</SortableCohortHeader>
                           <SortableCohortHeader columnKey="definingTrait">Defining Trait</SortableCohortHeader>
                         </TableRow>
@@ -227,8 +257,8 @@ function HomePageContent() {
                       <TableBody>
                         {sortedCohorts.map((cohort) => (
                           <TableRow key={cohort.name}>
-                            <TableCell className="font-medium">{cohort.name}</TableCell>
-                            <TableCell>{cohort.nickname}</TableCell>
+                            <TableCell className="font-medium">{cohort.nickname}</TableCell>
+                            <TableCell>{cohort.name}</TableCell>
                             <TableCell>{cohort.startYear} – {cohort.endYear}</TableCell>
                             <TableCell className="text-muted-foreground">{cohort.definingTrait}</TableCell>
                           </TableRow>
@@ -270,9 +300,11 @@ function HomePageContent() {
   };
 
   const TopBar = () => (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-card px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-      <SidebarTrigger className="sm:hidden" />
-      <h1 className="text-xl font-semibold">Age Distance Grid</h1>
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-card px-6">
+      <div className="flex items-center gap-2">
+        <Bot className="h-7 w-7 text-primary" />
+        <h1 className="text-xl font-semibold tracking-tighter">ChronoGrid</h1>
+      </div>
       <div className="relative ml-auto flex-1 md:grow-0">
         <Input
             type="search"
@@ -280,17 +312,17 @@ function HomePageContent() {
             className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
         />
       </div>
-      <Avatar>
-          <AvatarImage src="https://placehold.co/100x100.png" alt="@shadcn" data-ai-hint="person face"/>
-          <AvatarFallback>CN</AvatarFallback>
+       <Avatar>
+          <AvatarImage src="https://placehold.co/100x100.png" alt="User" data-ai-hint="person face" />
+          <AvatarFallback>U</AvatarFallback>
       </Avatar>
     </header>
   );
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full flex-col">
-        <Sidebar collapsible="icon" className="hidden sm:flex">
+      <div className="flex min-h-screen w-full flex-col bg-muted/40">
+        <Sidebar collapsible="icon" className="hidden sm:flex" onMouseDown={(e) => e.preventDefault()}>
           <SidebarContent>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -305,16 +337,10 @@ function HomePageContent() {
                   <span>About</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton href="#" tooltip="Settings">
-                  <Settings />
-                  <span>Settings</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>
         </Sidebar>
-        <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+        <div className="flex flex-col sm:ml-14">
           <TopBar />
           <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
             <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
@@ -347,7 +373,12 @@ function HomePageContent() {
                 <GenerationData />
             </div>
             <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-1">
-              <PersonInputForm people={people} onPeopleChange={handlePeopleChange} />
+              <div className="w-full">
+                <Button onClick={handleShareLink} variant="outline" className="w-full mb-4">
+                  <Link className="mr-2 h-4 w-4" /> Share Link
+                </Button>
+                <PersonInputForm people={people} onPeopleChange={handlePeopleChange} />
+              </div>
             </div>
           </main>
         </div>
