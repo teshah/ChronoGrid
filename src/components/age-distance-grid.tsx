@@ -14,7 +14,7 @@ export function AgeDistanceGrid({ people }: AgeDistanceGridProps) {
       <div className="flex flex-col items-start">
         <span className="font-bold text-base">{person.name}</span>
         <div className="text-xs text-muted-foreground whitespace-nowrap">
-          {person.generation && <div>{person.generation.nickname}</div>}
+          {person.generation && <div>{person.generation.name}</div>}
           {person.age !== undefined && <div>Age: {person.age}</div>}
         </div>
       </div>
