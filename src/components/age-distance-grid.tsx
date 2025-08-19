@@ -9,6 +9,12 @@ interface AgeDistanceGridProps {
 
 export function AgeDistanceGrid({ people }: AgeDistanceGridProps) {
 
+  const getDisplayName = (person: Person) => {
+    const generationPart = person.generation ? ` (${person.generation.nickname})` : '';
+    const agePart = person.age !== undefined ? ` (${person.age})` : '';
+    return `${person.name}${generationPart}${agePart}`;
+  }
+
   return (
     <div className="w-full overflow-x-auto rounded-lg border">
       <Table className="min-w-full">
@@ -17,7 +23,7 @@ export function AgeDistanceGrid({ people }: AgeDistanceGridProps) {
             <TableHead className="sticky left-0 bg-muted/50 z-10 w-1/4 min-w-[150px]"></TableHead>
             {people.map((person, index) => (
               <TableHead key={person.id} className="text-center font-bold p-2 whitespace-nowrap animate-fade-in" style={{animationDelay: `${index * 0.1}s`}}>
-                {person.name} ({person.age})
+                {getDisplayName(person)}
               </TableHead>
             ))}
           </TableRow>
@@ -26,7 +32,7 @@ export function AgeDistanceGrid({ people }: AgeDistanceGridProps) {
           {people.map((rowPerson, rowIndex) => (
             <TableRow key={rowPerson.id} className="animate-fade-in" style={{animationDelay: `${(rowIndex + 1) * 0.1}s`}}>
               <TableHead className="sticky left-0 bg-card z-10 font-bold p-2 whitespace-nowrap">
-                {rowPerson.name} ({rowPerson.age})
+                {getDisplayName(rowPerson)}
               </TableHead>
               {people.map((colPerson) => (
                 <TableCell key={colPerson.id} className="text-center p-2">

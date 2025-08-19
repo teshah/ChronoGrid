@@ -1,4 +1,4 @@
-export function calculateAge(dobString: string): { age: number; formattedDob: string } | null {
+export function calculateAge(dobString: string): { age: number; formattedDob: string; year: number; } | null {
   if (!dobString) return null;
 
   const trimmedDob = dobString.trim();
@@ -39,5 +39,5 @@ export function calculateAge(dobString: string): { age: number; formattedDob: st
 
   const formattedDob = `${String(month).padStart(2, '0')}/${String(day).padStart(2, '0')}/${year}`;
 
-  return { age, formattedDob };
+  return { age, formattedDob, year };
 }

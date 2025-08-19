@@ -7,6 +7,7 @@ import { AgeDistanceGrid } from "@/components/age-distance-grid";
 import { AffiliationFinder } from "@/components/affiliation-finder";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { calculateAge } from "@/lib/dates";
+import { getGeneration } from "@/lib/generations";
 import {
   Sidebar,
   SidebarContent,
@@ -32,11 +33,12 @@ export default function Home() {
       if (person.dob) {
         const ageResult = calculateAge(person.dob);
         if (ageResult) {
-          return { ...person, age: ageResult.age, dob: ageResult.formattedDob, errors: undefined };
+          const generation = getGeneration(ageResult.year);
+          return { ...person, age: ageResult.age, dob: ageResult.formattedDob, generation: generation ?? undefined, errors: undefined };
         }
-        return { ...person, age: undefined, errors: { ...person.errors, dob: "Invalid date" } };
+        return { ...person, age: undefined, generation: undefined, errors: { ...person.errors, dob: "Invalid date" } };
       }
-      return { ...person, age: undefined };
+      return { ...person, age: undefined, generation: undefined };
     });
     setPeople(processedPeople);
   };
