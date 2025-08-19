@@ -15,9 +15,15 @@ interface PersonInputFormProps {
   onPeopleChange: (people: Person[]) => void;
 }
 
+const initialBulkText = `Olivia Chen, 1985-03-12
+Benjamin Carter, 1992-07-24
+Sophia Rodriguez, 1978-11-02
+William Kim, 2001-01-15
+Ava Williams, 1998-09-30`;
+
 export function PersonInputForm({ people, onPeopleChange }: PersonInputFormProps) {
   const { toast } = useToast();
-  const [bulkText, setBulkText] = useState('');
+  const [bulkText, setBulkText] = useState(initialBulkText);
 
   const handleUpdatePerson = (id: number, field: 'name' | 'dob', value: string) => {
     const newPeople = people.map((person) => (person.id === id ? { ...person, [field]: value } : person));
@@ -125,10 +131,11 @@ export function PersonInputForm({ people, onPeopleChange }: PersonInputFormProps
             </TooltipProvider>
           </label>
           <Textarea
-            placeholder="Name, YYYY-MM-DD&#10;Name, MM/DD/YYYY..."
+            placeholder="Name, YYYY-MM-DD\nName, MM/DD/YYYY..."
             value={bulkText}
             onChange={(e) => setBulkText(e.target.value)}
             className="mt-1"
+            rows={6}
           />
           <Button onClick={processBulkText} className="w-full mt-2">Process Bulk Input</Button>
         </div>

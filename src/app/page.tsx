@@ -19,16 +19,8 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 
-const generateInitialPeople = (count: number): Person[] => {
-  return Array.from({ length: count }, (_, i) => ({
-    id: Date.now() + i,
-    name: "",
-    dob: "",
-  }));
-};
-
 export default function Home() {
-  const [people, setPeople] = useState<Person[]>(() => generateInitialPeople(5));
+  const [people, setPeople] = useState<Person[]>([]);
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
