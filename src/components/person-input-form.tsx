@@ -169,7 +169,7 @@ export function PersonInputForm({ people, onPeopleChange }: PersonInputFormProps
             </TooltipProvider>
           </label>
           <Textarea
-            placeholder="Name, YYYY-MM-DD\nName, MM/DD/YYYY..."
+            placeholder={`Name, YYYY-MM-DD\nName, MM/DD/YYYY...`}
             value={bulkText}
             onChange={(e) => setBulkText(e.target.value)}
             className="mt-1"
