@@ -28,6 +28,7 @@ export default function Home() {
   const [people, setPeople] = useState<Person[]>([]);
   const [isClient, setIsClient] = useState(false);
   const [groupByGeneration, setGroupByGeneration] = useState(false);
+  const [generationSortDirection, setGenerationSortDirection] = useState<'ascending' | 'descending'>('ascending');
 
   useEffect(() => {
     setIsClient(true);
@@ -58,8 +59,10 @@ export default function Home() {
         const bCohort = generationCohorts.find(c => c.nickname === b.generation!.nickname);
         
         if (aCohort && bCohort) {
-          // Primary sort: descending by startYear to show newest generations first
-          const generationSort = bCohort.startYear - aCohort.startYear;
+          // Primary sort: by generation startYear
+          const generationSort = generationSortDirection === 'ascending' 
+            ? aCohort.startYear - bCohort.startYear 
+            : bCohort.startYear - aCohort.startYear;
           if (generationSort !== 0) {
             return generationSort;
           }
@@ -77,7 +80,11 @@ export default function Home() {
       });
     }
     return filtered;
-  }, [people, groupByGeneration]);
+  }, [people, groupByGeneration, generationSortDirection]);
+  
+  const toggleGenerationSortDirection = () => {
+    setGenerationSortDirection(prev => prev === 'ascending' ? 'descending' : 'ascending');
+  };
 
   if (!isClient) {
     return null;
@@ -252,7 +259,10 @@ export default function Home() {
             </div>
             <div className="flex items-center space-x-2 pt-1">
               <Checkbox id="group-by-generation" checked={groupByGeneration} onCheckedChange={(checked) => setGroupByGeneration(!!checked)} />
-              <Label htmlFor="group-by-generation">Group by Generation</Label>
+              <Label htmlFor="group-by-generation" className="cursor-pointer">Group by Generation</Label>
+              <Button variant="ghost" size="icon" onClick={toggleGenerationSortDirection} className={`h-6 w-6 ${!groupByGeneration ? 'hidden' : ''}`}>
+                  <ArrowUpDown className="h-4 w-4" />
+              </Button>
             </div>
           </div>
         </CardHeader>
