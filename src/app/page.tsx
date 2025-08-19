@@ -10,20 +10,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { calculateAge } from "@/lib/dates";
 import { getGeneration, generationCohorts, type Generation, generationSources, type GenerationSource } from "@/lib/generations";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, Users, Info, Bot, Link } from "lucide-react";
+import { ArrowUpDown, Users, Info, Bot, PanelRightOpen, PanelRightClose } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 function HomePageContent() {
   const { toast } = useToast();
   const [people, setPeople] = useState<Person[]>([]);
   const [isClient, setIsClient] = useState(false);
+  const [isSheetOpen, setIsSheetOpen] = useState(true);
   const [groupByGeneration, setGroupByGeneration] = useState(false);
   const [generationSortDirection, setGenerationSortDirection] = useState<'ascending' | 'descending'>('ascending');
   const searchParams = useSearchParams();
@@ -62,35 +62,6 @@ function HomePageContent() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
-
-  const handleShareLink = () => {
-    const validPeople = people.filter(p => p.name && p.dob);
-    if (validPeople.length === 0) {
-      toast({
-        title: 'No Data to Share',
-        description: 'Please add at least one person with a name and date of birth.',
-        variant: 'destructive'
-      });
-      return;
-    }
-    const dataString = validPeople.map(p => `${p.name},${p.dob}`).join(';');
-    const encodedData = btoa(dataString);
-    const url = `${window.location.origin}/?data=${encodeURIComponent(encodedData)}`;
-    
-    navigator.clipboard.writeText(url).then(() => {
-      toast({
-        title: 'Link Copied!',
-        description: 'A shareable link has been copied to your clipboard.',
-      });
-    }, (err) => {
-      console.error('Could not copy text: ', err);
-      toast({
-        title: 'Error',
-        description: 'Could not copy the link to your clipboard.',
-        variant: 'destructive'
-      });
-    });
-  };
 
   const handlePeopleChange = (updatedPeople: Person[]) => {
     const processedPeople = updatedPeople.map((person) => {
@@ -310,17 +281,12 @@ function HomePageContent() {
         <Bot className="h-7 w-7 text-primary" />
         <h1 className="text-xl font-semibold tracking-tighter">ChronoGrid</h1>
       </div>
-      <div className="relative ml-auto flex-1 md:grow-0">
-        <Input
-            type="search"
-            placeholder="Search..."
-            className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
-        />
+      <div className="ml-auto">
+        <Button variant="ghost" size="icon" onClick={() => setIsSheetOpen(!isSheetOpen)}>
+          {isSheetOpen ? <PanelRightClose /> : <PanelRightOpen />}
+          <span className="sr-only">Toggle Panel</span>
+        </Button>
       </div>
-       <Avatar>
-          <AvatarImage src="https://placehold.co/100x100.png" alt="User" data-ai-hint="person face" />
-          <AvatarFallback>U</AvatarFallback>
-      </Avatar>
     </header>
   );
 
@@ -328,8 +294,11 @@ function HomePageContent() {
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
         <div className="flex flex-col">
           <TopBar />
-          <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
-            <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
+          <main className={cn(
+            "flex-1 p-4 sm:px-6 sm:py-0 md:gap-8 transition-all duration-300 ease-in-out",
+            isSheetOpen ? "mr-[350px]" : "mr-0"
+          )}>
+            <div className="grid auto-rows-max items-start gap-4 md:gap-8">
                 <Card className="shadow-lg animate-fade-in">
                   <CardHeader>
                     <div className="flex justify-between items-start">
@@ -358,12 +327,14 @@ function HomePageContent() {
                 </Card>
                 <GenerationData />
             </div>
-            <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-1">
-              <div className="w-full">
+          </main>
+          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+            <SheetContent className="w-[350px] sm:w-[350px] p-0" hideCloseButton={true}>
+              <div className="h-full overflow-y-auto">
                 <PersonInputForm people={people} onPeopleChange={handlePeopleChange} />
               </div>
-            </div>
-          </main>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
   );
@@ -376,5 +347,3 @@ export default function Home() {
     </React.Suspense>
   );
 }
-
-    
