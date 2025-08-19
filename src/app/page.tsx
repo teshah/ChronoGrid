@@ -17,7 +17,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 function HomePageContent() {
   const { toast } = useToast();
@@ -281,6 +281,9 @@ function HomePageContent() {
           </main>
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetContent className="w-[350px] sm:w-[350px] p-0" hideCloseButton={true}>
+              <SheetHeader>
+                <SheetTitle className="sr-only">Edit Group Members</SheetTitle>
+              </SheetHeader>
               <div className="h-full overflow-y-auto">
                 <PersonInputForm people={people} onPeopleChange={handlePeopleChange} />
               </div>
@@ -298,3 +301,5 @@ export default function Home() {
     </React.Suspense>
   );
 }
+
+    
