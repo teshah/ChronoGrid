@@ -90,7 +90,7 @@ export function PersonInputForm({ people, onPeopleChange }: PersonInputFormProps
                     placeholder="e.g. Jane Doe"
                     value={person.name}
                     onChange={(e) => handleUpdatePerson(person.id, 'name', e.target.value)}
-                    className="w-full bg-background"
+                    className="w-full"
                   />
                 </div>
                 <div>
@@ -100,7 +100,7 @@ export function PersonInputForm({ people, onPeopleChange }: PersonInputFormProps
                     placeholder="YYYY-MM-DD"
                     value={person.dob}
                     onChange={(e) => handleUpdatePerson(person.id, 'dob', e.target.value)}
-                    className={`w-full bg-background ${person.errors?.dob ? 'border-destructive' : ''}`}
+                    className={`w-full ${person.errors?.dob ? 'border-destructive' : ''}`}
                   />
                   {person.errors?.dob && <p className="text-xs text-destructive mt-1">{person.errors.dob}</p>}
                 </div>
@@ -147,7 +147,7 @@ export function PersonInputForm({ people, onPeopleChange }: PersonInputFormProps
             placeholder="Name, YYYY-MM-DD\nName, MM/DD/YYYY..."
             value={bulkText}
             onChange={(e) => setBulkText(e.target.value)}
-            className="mt-1 bg-background"
+            className="mt-1"
             rows={6}
           />
           <div className="flex items-center space-x-2 mt-2">
