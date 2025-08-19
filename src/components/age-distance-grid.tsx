@@ -10,9 +10,16 @@ interface AgeDistanceGridProps {
 export function AgeDistanceGrid({ people }: AgeDistanceGridProps) {
 
   const getDisplayName = (person: Person) => {
-    const generationPart = person.generation ? ` (${person.generation.nickname})` : '';
-    const agePart = person.age !== undefined ? ` (${person.age})` : '';
-    return `${person.name}${generationPart}${agePart}`;
+    const generationPart = person.generation ? `${person.generation.nickname}` : '';
+    const agePart = person.age !== undefined ? `(${person.age})` : '';
+    return (
+      <div className="flex flex-col items-start">
+        <span className="font-bold text-base">{person.name}</span>
+        <span className="text-xs text-muted-foreground whitespace-nowrap">
+          {generationPart} {agePart}
+        </span>
+      </div>
+    )
   }
 
   return (
@@ -22,7 +29,7 @@ export function AgeDistanceGrid({ people }: AgeDistanceGridProps) {
           <TableRow className="bg-muted/50">
             <TableHead className="sticky left-0 bg-muted/50 z-10 w-1/4 min-w-[150px]"></TableHead>
             {people.map((person, index) => (
-              <TableHead key={person.id} className="text-center font-bold p-2 whitespace-nowrap animate-fade-in" style={{animationDelay: `${index * 0.1}s`}}>
+              <TableHead key={person.id} className="text-left font-bold p-2 animate-fade-in" style={{animationDelay: `${index * 0.1}s`}}>
                 {getDisplayName(person)}
               </TableHead>
             ))}
@@ -31,7 +38,7 @@ export function AgeDistanceGrid({ people }: AgeDistanceGridProps) {
         <TableBody>
           {people.map((rowPerson, rowIndex) => (
             <TableRow key={rowPerson.id} className="animate-fade-in" style={{animationDelay: `${(rowIndex + 1) * 0.1}s`}}>
-              <TableHead className="sticky left-0 bg-card z-10 font-bold p-2 whitespace-nowrap">
+              <TableHead className="sticky left-0 bg-card z-10 font-bold p-2">
                 {getDisplayName(rowPerson)}
               </TableHead>
               {people.map((colPerson) => (
